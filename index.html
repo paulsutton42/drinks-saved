@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Saved">
+<meta name="theme-color" content="#1d9e75">
+<title>Drinks Saved</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231d9e75'/%3E%3Ctext x='90' y='118' font-size='90' text-anchor='middle' fill='white' font-family='Arial'%3E%24%3C/text%3E%3C/svg%3E">
+<style>
+  :root{
+    --bg:#f4f1ea; --surface:#ffffff; --ink:#2c2c2a; --muted:#76746c;
+    --hint:#a3a199; --line:rgba(44,44,42,0.10); --line2:rgba(44,44,42,0.16);
+    --green:#1d9e75; --green-dk:#0f6e56; --green-soft:#e1f5ee;
+    --danger:#c1453a; --radius:14px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --bg:#181815; --surface:#232320; --ink:#ece9e1; --muted:#9b988f;
+      --hint:#6d6b63; --line:rgba(255,255,255,0.08); --line2:rgba(255,255,255,0.14);
+      --green:#5dcaa5; --green-dk:#9fe1cb; --green-soft:#0f3a30;
+      --danger:#e8746a;
+    }
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+    padding:calc(env(safe-area-inset-top) + 8px) 18px calc(env(safe-area-inset-bottom) + 24px);
+    max-width:520px; margin:0 auto;
+    -webkit-font-smoothing:antialiased;
+  }
+  header{padding:14px 2px 18px;}
+  header h1{font-size:19px; font-weight:600; margin:0; letter-spacing:-0.02em;}
+  header p{font-size:13px; color:var(--muted); margin:3px 0 0;}
+
+  .hero{
+    background:var(--green); border-radius:20px;
+    padding:26px 22px; text-align:center; margin-bottom:20px;
+    color:#fff;
+  }
+  @media (prefers-color-scheme: dark){ .hero{background:var(--green-soft);} .hero *{color:var(--green-dk)!important;} }
+  .hero .label{font-size:13px; opacity:0.9; margin:0 0 6px; letter-spacing:0.02em;}
+  .hero .amount{font-size:46px; font-weight:600; margin:0; letter-spacing:-0.03em; line-height:1;}
+  .hero .sub{font-size:13px; opacity:0.9; margin:10px 0 0;}
+
+  .card{
+    background:var(--surface); border:0.5px solid var(--line);
+    border-radius:var(--radius); padding:18px; margin-bottom:18px;
+  }
+  .card h2{font-size:15px; font-weight:600; margin:0 0 16px;}
+
+  .row{display:flex; align-items:center; gap:12px; margin-bottom:14px;}
+  .row label{font-size:14px; color:var(--muted); flex:1;}
+
+  .stepper{display:flex; align-items:center; gap:6px;}
+  .step-btn{
+    width:42px; height:42px; border:0.5px solid var(--line2); background:var(--surface);
+    color:var(--ink); border-radius:11px; font-size:24px; font-weight:400;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    user-select:none; transition:transform .08s, background .15s;
+  }
+  .step-btn:active{transform:scale(0.92); background:var(--bg);}
+  .step-val{font-size:22px; font-weight:600; min-width:34px; text-align:center;}
+
+  .price-wrap{display:flex; align-items:center; gap:4px;}
+  .price-wrap .dollar{font-size:17px; color:var(--muted);}
+  input[type=number]{
+    width:104px; height:42px; border:0.5px solid var(--line2); background:var(--surface);
+    color:var(--ink); border-radius:11px; text-align:right; font-size:17px;
+    padding:0 12px; font-family:inherit;
+  }
+  input[type=number]:focus{outline:none; border-color:var(--green);}
+
+  input[type=text]{
+    width:100%; height:42px; border:0.5px solid var(--line2); background:var(--surface);
+    color:var(--ink); border-radius:11px; font-size:15px; padding:0 14px;
+    font-family:inherit; margin-top:2px;
+  }
+  input[type=text]::placeholder{color:var(--hint);}
+  input[type=text]:focus{outline:none; border-color:var(--green);}
+  input[type=date]{
+    width:100%; height:42px; border:0.5px solid var(--line2); background:var(--surface);
+    color:var(--ink); border-radius:11px; font-size:15px; padding:0 14px;
+    font-family:inherit; margin-top:2px;
+  }
+  input[type=date]:focus{outline:none; border-color:var(--green);}
+  .field-stack{margin-bottom:14px;}
+  .field-stack > label{font-size:14px; color:var(--muted); display:block;}
+
+  .night-total{
+    display:flex; align-items:baseline; justify-content:space-between;
+    padding:14px 0 16px; margin-top:2px; border-top:0.5px solid var(--line);
+  }
+  .night-total span:first-child{font-size:14px; color:var(--muted);}
+  .night-total span:last-child{font-size:24px; font-weight:600; color:var(--green-dk);}
+
+  .log-btn{
+    width:100%; height:52px; border:none; background:var(--green); color:#fff;
+    border-radius:13px; font-size:16px; font-weight:600; cursor:pointer;
+    font-family:inherit; transition:transform .08s, opacity .15s;
+  }
+  .log-btn:active{transform:scale(0.98); opacity:0.9;}
+  @media (prefers-color-scheme: dark){ .log-btn{color:var(--green-dk); background:var(--green-soft);} }
+
+  .hist-head{display:flex; align-items:center; justify-content:space-between; padding:0 2px 10px;}
+  .hist-head h2{font-size:15px; font-weight:600; margin:0;}
+  .reset-btn{
+    border:none; background:none; color:var(--danger); font-size:13px;
+    font-family:inherit; cursor:pointer; padding:6px 4px;
+  }
+
+  .entry{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--surface); border:0.5px solid var(--line);
+    border-radius:12px; padding:13px 15px; margin-bottom:9px;
+  }
+  .entry .e-main{font-size:15px; margin:0;}
+  .entry .e-sub{font-size:12px; color:var(--muted); margin:3px 0 0;}
+  .entry .e-right{display:flex; align-items:center; gap:12px;}
+  .entry .e-amt{font-size:16px; font-weight:600; color:var(--green-dk);}
+  .del{
+    width:30px; height:30px; border:none; background:none; color:var(--hint);
+    font-size:20px; cursor:pointer; line-height:1; padding:0;
+    display:flex; align-items:center; justify-content:center; border-radius:8px;
+  }
+  .del:active{background:var(--bg);}
+  .empty{font-size:13px; color:var(--hint); text-align:center; padding:24px 0; margin:0;}
+
+  .toast{
+    position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px);
+    transform:translateX(-50%) translateY(20px); opacity:0;
+    background:var(--ink); color:var(--bg); font-size:14px; font-weight:500;
+    padding:12px 20px; border-radius:30px; pointer-events:none;
+    transition:transform .25s, opacity .25s; z-index:50;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Drinks Saved</h1>
+  <p>Money kept in your pocket, one night at a time</p>
+</header>
+
+<div class="hero">
+  <p class="label">Total saved</p>
+  <p class="amount" id="totalMoney">$0.00</p>
+  <p class="sub" id="totalSub">0 drinks skipped · 0 nights</p>
+</div>
+
+<div class="card">
+  <h2>Log a night you skipped drinks</h2>
+
+  <div class="row">
+    <label>Drinks skipped</label>
+    <div class="stepper">
+      <button class="step-btn" id="minus" aria-label="Fewer drinks">−</button>
+      <span class="step-val" id="drinksVal">1</span>
+      <button class="step-btn" id="plus" aria-label="More drinks">+</button>
+    </div>
+  </div>
+
+  <div class="row">
+    <label>Price per drink</label>
+    <div class="price-wrap">
+      <span class="dollar">$</span>
+      <input type="number" id="price" inputmode="decimal" min="0" step="0.50" value="9.00">
+    </div>
+  </div>
+
+  <div class="field-stack">
+    <label for="dateInput">Date <span style="color:var(--hint); font-weight:400;">(optional)</span></label>
+    <input type="date" id="dateInput">
+  </div>
+
+  <div class="field-stack">
+    <label for="place">Place <span style="color:var(--hint); font-weight:400;">(optional)</span></label>
+    <input type="text" id="place" placeholder="e.g. Murray's, The Local…" autocomplete="off" maxlength="60">
+  </div>
+
+  <div class="night-total">
+    <span>This night</span>
+    <span id="nightTotal">$9.00</span>
+  </div>
+
+  <button class="log-btn" id="logBtn">Add to tally</button>
+</div>
+
+<div class="hist-head">
+  <h2>History</h2>
+  <button class="reset-btn" id="resetBtn">Reset all</button>
+</div>
+<div id="history"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var KEY = 'drinksSavedLog.v1';
+  var drinks = 1;
+  var entries = [];
+
+  var dv = document.getElementById('drinksVal');
+  var pv = document.getElementById('price');
+  var place = document.getElementById('place');
+  var dateInput = document.getElementById('dateInput');
+  var nt = document.getElementById('nightTotal');
+  var hist = document.getElementById('history');
+  var toastEl = document.getElementById('toast');
+  var toastTimer;
+
+  function money(n){
+    return '$' + n.toLocaleString('en-US',{minimumFractionDigits:2, maximumFractionDigits:2});
+  }
+  function price(){
+    var p = parseFloat(pv.value);
+    return (isNaN(p) || p < 0) ? 0 : p;
+  }
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toastEl.classList.remove('show'); }, 1800);
+  }
+
+  function load(){
+    try{
+      var raw = localStorage.getItem(KEY);
+      if(raw){ entries = JSON.parse(raw) || []; }
+    }catch(e){ entries = []; }
+  }
+  function save(){
+    try{ localStorage.setItem(KEY, JSON.stringify(entries)); }catch(e){}
+  }
+
+  function updateNight(){
+    dv.textContent = drinks;
+    nt.textContent = money(drinks * price());
+  }
+
+  function render(){
+    var moneyT = 0, drinkT = 0;
+    entries.forEach(function(e){ moneyT += e.drinks * e.price; drinkT += e.drinks; });
+
+    document.getElementById('totalMoney').textContent = money(moneyT);
+    document.getElementById('totalSub').textContent =
+      drinkT + (drinkT === 1 ? ' drink' : ' drinks') + ' skipped · ' +
+      entries.length + (entries.length === 1 ? ' night' : ' nights');
+
+    if(entries.length === 0){
+      hist.innerHTML = '<p class="empty">No nights logged yet. Add your first one above.</p>';
+      return;
+    }
+
+    var html = '';
+    for(var i = entries.length - 1; i >= 0; i--){
+      var e = entries[i];
+      var sub = e.date + ' · ' + money(e.price) + ' each';
+      if(e.place){ sub = e.place + ' · ' + sub; }
+      html += '<div class="entry">'
+        + '<div>'
+        + '<p class="e-main">' + e.drinks + (e.drinks === 1 ? ' drink' : ' drinks') + ' skipped</p>'
+        + '<p class="e-sub">' + sub + '</p>'
+        + '</div>'
+        + '<div class="e-right">'
+        + '<span class="e-amt">' + money(e.drinks * e.price) + '</span>'
+        + '<button class="del" data-id="' + e.id + '" aria-label="Delete entry">×</button>'
+        + '</div>'
+        + '</div>';
+    }
+    hist.innerHTML = html;
+
+    var dels = hist.querySelectorAll('.del');
+    for(var j = 0; j < dels.length; j++){
+      dels[j].addEventListener('click', function(){
+        var id = this.getAttribute('data-id');
+        entries = entries.filter(function(e){ return String(e.id) !== id; });
+        save(); render();
+      });
+    }
+  }
+
+  document.getElementById('minus').addEventListener('click', function(){
+    if(drinks > 1){ drinks--; updateNight(); }
+  });
+  document.getElementById('plus').addEventListener('click', function(){
+    if(drinks < 30){ drinks++; updateNight(); }
+  });
+  pv.addEventListener('input', updateNight);
+  pv.addEventListener('blur', function(){
+    var p = price();
+    pv.value = p.toFixed(2);
+    updateNight();
+  });
+
+  function setDateToday(){
+    var t = new Date();
+    var iso = t.getFullYear() + '-' +
+      String(t.getMonth()+1).padStart(2,'0') + '-' +
+      String(t.getDate()).padStart(2,'0');
+    dateInput.value = iso;
+  }
+  function formatChosenDate(){
+    var v = dateInput.value;
+    var d;
+    if(v){
+      var parts = v.split('-');
+      d = new Date(parseInt(parts[0],10), parseInt(parts[1],10)-1, parseInt(parts[2],10));
+    } else {
+      d = new Date();
+    }
+    return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'});
+  }
+
+  document.getElementById('logBtn').addEventListener('click', function(){
+    var p = price();
+    var date = formatChosenDate();
+    var placeName = place.value.trim().replace(/[<>]/g, '');
+    entries.push({ id: Date.now(), drinks: drinks, price: p, date: date, place: placeName });
+    save(); render();
+    place.value = '';
+    setDateToday();
+    toast('Saved ' + money(drinks * p));
+  });
+
+  document.getElementById('resetBtn').addEventListener('click', function(){
+    if(entries.length === 0) return;
+    if(confirm('Clear all logged nights? This cannot be undone.')){
+      entries = []; save(); render();
+      toast('Cleared');
+    }
+  });
+
+  load();
+  setDateToday();
+  updateNight();
+  render();
+})();
+</script>
+</body>
+</html>
