@@ -6,10 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Saved">
+<meta name="apple-mobile-web-app-title" content="Health">
 <meta name="theme-color" content="#1d9e75">
-<title>Drinks Saved</title>
-<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231d9e75'/%3E%3Ctext x='90' y='118' font-size='90' text-anchor='middle' fill='white' font-family='Arial'%3E%24%3C/text%3E%3C/svg%3E">
+<title>Health Tracking</title>
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231d9e75'/%3E%3Ctext x='90' y='120' font-size='96' text-anchor='middle' fill='white' font-family='Arial'%3E%E2%9C%93%3C/text%3E%3C/svg%3E">
 <style>
   :root{
     --bg:#f4f1ea; --surface:#ffffff; --ink:#2c2c2a; --muted:#76746c;
@@ -39,11 +39,16 @@
   header h1{font-size:19px; font-weight:600; margin:0; letter-spacing:-0.02em;}
   header p{font-size:13px; color:var(--muted); margin:3px 0 0;}
 
-  .hero{background:var(--green); border-radius:20px; padding:24px 22px; text-align:center; margin-bottom:16px; color:#fff;}
+  .hero{background:var(--green); border-radius:20px; padding:22px 22px; text-align:center; margin-bottom:12px; color:#fff;}
   @media (prefers-color-scheme: dark){ .hero{background:var(--green-soft);} .hero .amount,.hero .label,.hero .sub{color:var(--green-dk)!important;} }
   .hero .label{font-size:13px; opacity:0.9; margin:0 0 6px;}
   .hero .amount{font-size:44px; font-weight:600; margin:0; letter-spacing:-0.03em; line-height:1;}
-  .hero .sub{font-size:13px; opacity:0.9; margin:10px 0 0;}
+  .hero .sub{font-size:13px; opacity:0.9; margin:8px 0 0;}
+  .hero-actions{display:flex; gap:10px; margin-bottom:16px;}
+  .hero-btn{flex:1; height:44px; border-radius:12px; border:0.5px solid var(--line2); background:var(--surface); color:var(--ink); font-size:14px; font-weight:600; font-family:inherit; cursor:pointer;}
+  .hero-btn:active{transform:scale(0.98);}
+  .hero-btn.spend{border:none; background:var(--amber); color:#fff;}
+  @media (prefers-color-scheme: dark){ .hero-btn.spend{color:#241a08;} }
 
   .tabs{display:flex; gap:6px; margin-bottom:18px; background:var(--surface); border:0.5px solid var(--line); border-radius:12px; padding:4px;}
   .tab{flex:1; text-align:center; padding:9px 4px; font-size:13px; font-weight:600; color:var(--muted); border-radius:9px; cursor:pointer; user-select:none; border:none; background:none; font-family:inherit;}
@@ -80,7 +85,6 @@
   .btn-primary:active{transform:scale(0.98); opacity:0.9;}
   @media (prefers-color-scheme: dark){ .btn-primary{color:var(--green-dk); background:var(--green-soft);} }
 
-  /* Daily prompt choice buttons */
   .choice-row{display:flex; gap:10px; margin:6px 0 4px;}
   .choice{flex:1; height:52px; border:0.5px solid var(--line2); background:var(--surface); color:var(--ink); border-radius:13px; font-size:15px; font-weight:600; cursor:pointer; font-family:inherit; display:flex; align-items:center; justify-content:center; gap:7px;}
   .choice:active{transform:scale(0.98);}
@@ -90,9 +94,7 @@
 
   .prompt-date{display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;}
   .prompt-date .pd-label{font-size:13px; color:var(--muted);}
-  .link-btn{border:none; background:none; color:var(--green-dk); font-size:13px; font-weight:600; cursor:pointer; font-family:inherit; padding:4px;}
 
-  /* Calendar */
   .cal-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
   .cal-head .cal-title{font-size:15px; font-weight:600;}
   .cal-nav{display:flex; gap:6px;}
@@ -105,12 +107,17 @@
   .cal-cell.today{outline:2px solid var(--blue); outline-offset:-2px;}
   .cal-good{background:var(--green); color:#fff; border-color:var(--green);}
   .cal-bad{background:var(--danger); color:#fff; border-color:var(--danger);}
+  .cal-cell .cnt{position:absolute; top:2px; right:4px; font-size:9px; font-weight:700; opacity:0.9;}
   @media (prefers-color-scheme: dark){ .cal-good{color:#14201c;} .cal-bad{color:#2a1513;} }
   .cal-legend{display:flex; gap:16px; margin-top:12px; font-size:12px; color:var(--muted);}
   .cal-legend span{display:flex; align-items:center; gap:6px;}
   .dot{width:11px; height:11px; border-radius:3px; display:inline-block;}
 
-  /* History + breakdown */
+  .stats-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+  .stat{background:var(--bg); border:0.5px solid var(--line); border-radius:12px; padding:12px 14px;}
+  .stat .stat-val{font-size:22px; font-weight:600; letter-spacing:-0.02em;}
+  .stat .stat-label{font-size:11px; color:var(--muted); margin-top:2px; line-height:1.3;}
+
   .sec-head{display:flex; align-items:center; justify-content:space-between; padding:0 2px 10px;}
   .sec-head h2{font-size:15px; font-weight:600; margin:0;}
   .reset-btn{border:none; background:none; color:var(--danger); font-size:13px; font-family:inherit; cursor:pointer; padding:6px 4px;}
@@ -118,6 +125,7 @@
   .entry .e-main{font-size:15px; margin:0;} .entry .e-sub{font-size:12px; color:var(--muted); margin:3px 0 0;}
   .entry .e-right{display:flex; align-items:center; gap:12px;}
   .entry .e-amt{font-size:16px; font-weight:600; color:var(--green-dk);}
+  .entry .e-amt.spent{color:var(--amber);}
   .del{width:30px; height:30px; border:none; background:none; color:var(--hint); font-size:20px; cursor:pointer; padding:0; display:flex; align-items:center; justify-content:center; border-radius:8px;}
   .del:active{background:var(--bg);}
   .empty{font-size:13px; color:var(--hint); text-align:center; padding:24px 0; margin:0;}
@@ -127,6 +135,7 @@
   .bd-row:last-child{border-bottom:none;}
   .bd-row .bd-label{font-size:14px;} .bd-row .bd-sub{font-size:11px; color:var(--muted); margin-top:2px;}
   .bd-row .bd-amt{font-size:15px; font-weight:600; color:var(--green-dk);}
+  .bd-row .bd-amt.spent{color:var(--amber);}
 
   .backup-row{display:flex; gap:10px; margin-top:6px;}
   .backup-btn{flex:1; display:flex; flex-direction:column; align-items:flex-start; gap:2px; background:var(--surface); border:0.5px solid var(--line2); border-radius:12px; padding:13px 14px; cursor:pointer; font-family:inherit; text-align:left;}
@@ -141,27 +150,33 @@
   .modal-hint{font-size:13px; color:var(--muted); margin:0 0 14px;}
   #backupText{width:100%; height:150px; border:0.5px solid var(--line2); background:var(--bg); color:var(--ink); border-radius:12px; padding:12px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; resize:none; -webkit-user-select:text; user-select:text;}
   #backupText:focus{outline:none; border-color:var(--green);}
+  .modal-field{margin-bottom:14px;}
+  .modal-field label{font-size:13px; color:var(--muted); display:block; margin-bottom:4px;}
+  .modal-field input[type=number]{width:100%; text-align:left;}
   .modal-actions{display:flex; gap:10px; margin-top:16px;}
   .modal-btn{flex:1; height:48px; border-radius:12px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; border:0.5px solid var(--line2);}
   .modal-btn.ghost{background:var(--surface); color:var(--muted);}
   .modal-btn.primary{background:var(--green); color:#fff; border:none;}
   @media (prefers-color-scheme: dark){ .modal-btn.primary{background:var(--green-soft); color:var(--green-dk);} }
 
-  .toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%) translateY(20px); opacity:0; background:var(--ink); color:var(--bg); font-size:14px; font-weight:500; padding:12px 20px; border-radius:30px; pointer-events:none; transition:transform .25s, opacity .25s; z-index:50;}
+  .toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%) translateY(20px); opacity:0; background:var(--ink); color:var(--bg); font-size:14px; font-weight:500; padding:12px 20px; border-radius:30px; pointer-events:none; transition:transform .25s, opacity .25s; z-index:70;}
   .toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
 </style>
 </head>
 <body>
 
 <header>
-  <h1>Drinks Saved</h1>
-  <p>Money saved, dry days, and rings — one tap a day</p>
+  <h1>Health Tracking</h1>
+  <p>Savings, dry days, and rings — one tap a day</p>
 </header>
 
 <div class="hero">
-  <p class="label">Total saved</p>
-  <p class="amount" id="totalMoney">$0.00</p>
-  <p class="sub" id="totalSub">Getting started</p>
+  <p class="label">Available balance</p>
+  <p class="amount" id="balance">$0.00</p>
+  <p class="sub" id="lifetimeSub">$0.00 earned all-time · $0.00 spent</p>
+</div>
+<div class="hero-actions">
+  <button class="hero-btn spend" id="spendBtn">Spend / bank</button>
 </div>
 
 <div class="tabs">
@@ -170,41 +185,33 @@
   <button class="tab" data-tab="rings">Rings</button>
 </div>
 
-<!-- ============ SAVINGS PANEL ============ -->
+<!-- ============ SAVINGS ============ -->
 <div class="panel active" id="panel-savings">
   <div class="card">
     <h2>Log a night you skipped drinks</h2>
     <p class="card-hint">Record drinks you chose not to buy and what they'd have cost.</p>
     <div class="row">
       <label>Drinks skipped</label>
-      <div class="stepper">
-        <button class="step-btn" id="minus" aria-label="Fewer">−</button>
-        <span class="step-val" id="drinksVal">1</span>
-        <button class="step-btn" id="plus" aria-label="More">+</button>
-      </div>
+      <div class="stepper"><button class="step-btn" id="minus">−</button><span class="step-val" id="drinksVal">1</span><button class="step-btn" id="plus">+</button></div>
     </div>
     <div class="row">
       <label>Price per drink</label>
-      <div class="price-wrap"><span class="dollar">$</span>
-        <input type="number" id="price" inputmode="decimal" min="0" step="0.50" value="9.00"></div>
+      <div class="price-wrap"><span class="dollar">$</span><input type="number" id="price" inputmode="decimal" min="0" step="0.50" value="9.00"></div>
     </div>
-    <div class="field-stack">
-      <label for="dateInput">Date <span style="color:var(--hint);font-weight:400;">(optional)</span></label>
-      <input type="date" id="dateInput">
-    </div>
-    <div class="field-stack">
-      <label for="place">Place <span style="color:var(--hint);font-weight:400;">(optional)</span></label>
-      <input type="text" id="place" placeholder="e.g. Murray's, The Local…" autocomplete="off" maxlength="60">
-    </div>
+    <div class="field-stack"><label for="dateInput">Date <span style="color:var(--hint);font-weight:400;">(optional)</span></label><input type="date" id="dateInput"></div>
+    <div class="field-stack"><label for="place">Place <span style="color:var(--hint);font-weight:400;">(optional)</span></label><input type="text" id="place" placeholder="e.g. Murray's, The Local…" autocomplete="off" maxlength="60"></div>
     <div class="night-total"><span>This night</span><span id="nightTotal">$9.00</span></div>
     <button class="btn-primary" id="logBtn">Add to tally</button>
   </div>
 
-  <div class="sec-head"><h2>Savings breakdown</h2></div>
+  <div class="sec-head"><h2>Earnings breakdown</h2></div>
   <div class="breakdown" id="breakdown"></div>
 
   <div class="sec-head"><h2>Night history</h2><button class="reset-btn" id="resetBtn">Reset all</button></div>
   <div id="history"></div>
+
+  <div class="sec-head" style="margin-top:16px;"><h2>Purchases</h2></div>
+  <div id="spendHistory"></div>
 
   <div class="sec-head" style="margin-top:16px;"><h2>Backup</h2></div>
   <p class="card-hint" style="margin:0 0 10px 2px;">Your data is saved automatically on this phone. Use backup only to move to a new phone or recover after clearing Safari data.</p>
@@ -214,59 +221,52 @@
   </div>
 </div>
 
-<!-- ============ DRINKS PANEL ============ -->
+<!-- ============ DRINKS ============ -->
 <div class="panel" id="panel-drinks">
   <div class="card">
-    <h2>Did you drink today?</h2>
-    <p class="card-hint">7 dry days in a row earns $5. Every 7 after that earns another $5.</p>
-    <div class="prompt-date">
-      <span class="pd-label" id="drinkPromptLabel">Today</span>
-      <input type="date" id="drinkDate" style="width:auto; margin:0;">
+    <h2>How many drinks today?</h2>
+    <p class="card-hint">0 drinks keeps your dry streak. 7 dry days in a row earns $5, and every 7 after that earns another $5.</p>
+    <div class="prompt-date"><span class="pd-label" id="drinkPromptLabel">Today</span><input type="date" id="drinkDate" style="width:auto; margin:0;"></div>
+    <div class="row" style="margin-top:6px;">
+      <label>Drinks this day</label>
+      <div class="stepper"><button class="step-btn" id="dcMinus">−</button><span class="step-val" id="dcVal">0</span><button class="step-btn" id="dcPlus">+</button></div>
     </div>
     <div class="choice-row">
-      <button class="choice" id="drinkNo" data-v="no">🚫 No drinks</button>
-      <button class="choice" id="drinkYes" data-v="yes">🍺 Had a drink</button>
+      <button class="choice" id="drinkSave" data-v="save">Save day</button>
+      <button class="choice" id="drinkClear" data-v="clear">Clear</button>
     </div>
     <p class="card-hint" id="dryStreakLine" style="margin-top:14px;">—</p>
   </div>
   <div class="card">
-    <div class="cal-head">
-      <span class="cal-title" id="drinkCalTitle">—</span>
-      <div class="cal-nav"><button id="drinkPrev">‹</button><button id="drinkNext">›</button></div>
-    </div>
+    <h2>Statistics</h2>
+    <p class="card-hint">Based on the days you've recorded.</p>
+    <div class="stats-grid" id="drinkStats"></div>
+  </div>
+  <div class="card">
+    <div class="cal-head"><span class="cal-title" id="drinkCalTitle">—</span><div class="cal-nav"><button id="drinkPrev">‹</button><button id="drinkNext">›</button></div></div>
     <div class="cal-grid" id="drinkCal"></div>
-    <div class="cal-legend">
-      <span><i class="dot" style="background:var(--green)"></i>Dry day</span>
-      <span><i class="dot" style="background:var(--danger)"></i>Had a drink</span>
-    </div>
+    <div class="cal-legend"><span><i class="dot" style="background:var(--green)"></i>Dry (0)</span><span><i class="dot" style="background:var(--danger)"></i>Had drinks</span></div>
   </div>
 </div>
 
-<!-- ============ RINGS PANEL ============ -->
+<!-- ============ RINGS ============ -->
 <div class="panel" id="panel-rings">
   <div class="card">
     <h2>Did you close all your rings?</h2>
     <p class="card-hint">Close them 5 of 7 days (Mon–Sun) and that week earns $5, paid once the week ends. Rings can't be imported from Apple Health automatically — tap it in here.</p>
-    <div class="prompt-date">
-      <span class="pd-label" id="ringPromptLabel">Today</span>
-      <input type="date" id="ringDate" style="width:auto; margin:0;">
-    </div>
-    <div class="choice-row">
-      <button class="choice" id="ringYes" data-v="yes">✅ Closed all</button>
-      <button class="choice" id="ringNo" data-v="no">⭕ Not today</button>
-    </div>
+    <div class="prompt-date"><span class="pd-label" id="ringPromptLabel">Today</span><input type="date" id="ringDate" style="width:auto; margin:0;"></div>
+    <div class="choice-row"><button class="choice" id="ringYes" data-v="yes">✅ Closed all</button><button class="choice" id="ringNo" data-v="no">⭕ Not today</button></div>
     <p class="card-hint" id="ringWeekLine" style="margin-top:14px;">—</p>
   </div>
   <div class="card">
-    <div class="cal-head">
-      <span class="cal-title" id="ringCalTitle">—</span>
-      <div class="cal-nav"><button id="ringPrev">‹</button><button id="ringNext">›</button></div>
-    </div>
+    <h2>Statistics</h2>
+    <p class="card-hint">Based on the days you've recorded.</p>
+    <div class="stats-grid" id="ringStats"></div>
+  </div>
+  <div class="card">
+    <div class="cal-head"><span class="cal-title" id="ringCalTitle">—</span><div class="cal-nav"><button id="ringPrev">‹</button><button id="ringNext">›</button></div></div>
     <div class="cal-grid" id="ringCal"></div>
-    <div class="cal-legend">
-      <span><i class="dot" style="background:var(--green)"></i>Closed</span>
-      <span><i class="dot" style="background:var(--danger)"></i>Not closed</span>
-    </div>
+    <div class="cal-legend"><span><i class="dot" style="background:var(--green)"></i>Closed</span><span><i class="dot" style="background:var(--danger)"></i>Not closed</span></div>
   </div>
 </div>
 
@@ -274,11 +274,13 @@
   <div class="modal">
     <h3 id="modalTitle">Backup</h3>
     <p class="modal-hint" id="modalHint"></p>
-    <textarea id="backupText" spellcheck="false" autocomplete="off"></textarea>
-    <div class="modal-actions">
-      <button class="modal-btn ghost" id="modalCancel">Close</button>
-      <button class="modal-btn primary" id="modalAction">Copy</button>
+    <div id="spendFields" style="display:none;">
+      <div class="modal-field"><label for="spendAmount">Amount to spend / bank</label><input type="number" id="spendAmount" inputmode="decimal" min="0" step="1" placeholder="0.00"></div>
+      <div class="modal-field"><label for="spendWhat">What for? (optional)</label><input type="text" id="spendWhat" placeholder="e.g. New running shoes" maxlength="80"></div>
+      <p class="modal-hint" id="spendAvail" style="margin:0;"></p>
     </div>
+    <textarea id="backupText" spellcheck="false" autocomplete="off" style="display:none;"></textarea>
+    <div class="modal-actions"><button class="modal-btn ghost" id="modalCancel">Close</button><button class="modal-btn primary" id="modalAction">Copy</button></div>
   </div>
 </div>
 
@@ -286,10 +288,8 @@
 
 <script>
 (function(){
-  var DRY_BONUS = 5, RINGS_BONUS = 5;
-  var KEY = 'drinksSaved.v2';
+  var DRY_BONUS=5, RINGS_BONUS=5, KEY='healthTracking.v3';
 
-  // ---------- date helpers ----------
   function isoOf(y,m,d){ return y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0'); }
   function todayISO(){ var t=new Date(); return isoOf(t.getFullYear(),t.getMonth()+1,t.getDate()); }
   function parseISO(iso){ var p=iso.split('-'); return new Date(parseInt(p[0],10),parseInt(p[1],10)-1,parseInt(p[2],10)); }
@@ -298,20 +298,33 @@
   function weekStart(iso){ return addDays(iso,-dowMon(iso)); }
   function prettyDate(iso){ return parseISO(iso).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}); }
 
-  // ---------- state ----------
-  var state = { entries:[], drinkDays:{}, ringDays:{} };
-  function load(){ try{ var r=localStorage.getItem(KEY); if(r){ var d=JSON.parse(r); state.entries=d.entries||[]; state.drinkDays=d.drinkDays||{}; state.ringDays=d.ringDays||{}; } }catch(e){} }
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+  var state={ entries:[], drinkDays:{}, ringDays:{}, spends:[] };
 
+  function migrate(dd){
+    var conv={};
+    Object.keys(dd||{}).forEach(function(k){
+      var v=dd[k];
+      if(v===false) conv[k]=0; else if(v===true) conv[k]=1; else if(typeof v==='number') conv[k]=v;
+    });
+    return conv;
+  }
+  function load(){
+    try{
+      var r=localStorage.getItem(KEY);
+      if(r){ var d=JSON.parse(r); state.entries=d.entries||[]; state.drinkDays=d.drinkDays||{}; state.ringDays=d.ringDays||{}; state.spends=d.spends||[]; return; }
+      var old=localStorage.getItem('drinksSaved.v2');
+      if(old){ var o=JSON.parse(old); var data=o.data||o; state.entries=data.entries||[]; state.drinkDays=migrate(data.drinkDays); state.ringDays=data.ringDays||{}; state.spends=[]; save(); }
+    }catch(e){}
+  }
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
   function money(n){ return '$'+n.toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2}); }
 
-  // ---------- bonus math (verified) ----------
   function dryBonusCount(){
     var isos=Object.keys(state.drinkDays).sort(), bonuses=0, run=0, prev=null;
     for(var i=0;i<isos.length;i++){
-      var iso=isos[i], dry=(state.drinkDays[iso]===false), consec=(prev!==null && addDays(prev,1)===iso);
+      var iso=isos[i], dry=(state.drinkDays[iso]===0), consec=(prev!==null&&addDays(prev,1)===iso);
       if(dry&&consec) run+=1; else if(dry) run=1; else run=0;
-      if(run>0 && run%7===0) bonuses+=1;
+      if(run>0&&run%7===0) bonuses+=1;
       prev=iso;
     }
     return bonuses;
@@ -320,52 +333,49 @@
     var isos=Object.keys(state.ringDays); if(!isos.length) return 0;
     var weeks={}, ti=todayISO();
     isos.forEach(function(iso){ weeks[weekStart(iso)]=true; });
-    var bonuses=0;
+    var b=0;
     Object.keys(weeks).forEach(function(ws){
       var sunday=addDays(ws,6); if(sunday>=ti) return;
       var closed=0; for(var k=0;k<7;k++){ if(state.ringDays[addDays(ws,k)]===true) closed++; }
-      if(closed>=5) bonuses+=1;
+      if(closed>=5) b+=1;
     });
-    return bonuses;
+    return b;
   }
-
-  // ---------- current dry streak (ending today or last recorded) ----------
   function currentDryStreak(){
     var iso=todayISO(), streak=0;
-    // if today unrecorded, start from yesterday
     if(state.drinkDays[iso]===undefined) iso=addDays(iso,-1);
-    while(state.drinkDays[iso]===false){ streak++; iso=addDays(iso,-1); }
+    while(state.drinkDays[iso]===0){ streak++; iso=addDays(iso,-1); }
     return streak;
   }
-
-  function totals(){
-    var drinksMoney=0, drinkCount=0;
-    state.entries.forEach(function(e){ drinksMoney+=e.drinks*e.price; drinkCount+=e.drinks; });
-    var dryB=dryBonusCount()*DRY_BONUS;
-    var ringB=ringsBonusCount()*RINGS_BONUS;
-    return { drinksMoney:drinksMoney, drinkCount:drinkCount, dryB:dryB, ringB:ringB, total:drinksMoney+dryB+ringB, nights:state.entries.length };
+  function lifetimeEarned(){
+    var m=0; state.entries.forEach(function(e){ m+=e.drinks*e.price; });
+    return m + dryBonusCount()*DRY_BONUS + ringsBonusCount()*RINGS_BONUS;
   }
+  function totalSpent(){ var s=0; state.spends.forEach(function(x){ s+=x.amount; }); return s; }
+  function balance(){ return lifetimeEarned()-totalSpent(); }
 
-  // ---------- toast ----------
   var toastEl=document.getElementById('toast'), toastTimer;
   function toast(m){ toastEl.textContent=m; toastEl.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){toastEl.classList.remove('show');},1800); }
 
-  // ---------- render hero + breakdown ----------
   function renderTotals(){
-    var t=totals();
-    document.getElementById('totalMoney').textContent=money(t.total);
-    document.getElementById('totalSub').textContent =
-      money(t.drinksMoney)+' drinks · '+money(t.dryB)+' dry · '+money(t.ringB)+' rings';
+    var earned=lifetimeEarned(), spent=totalSpent();
+    document.getElementById('balance').textContent=money(earned-spent);
+    document.getElementById('lifetimeSub').textContent=money(earned)+' earned all-time · '+money(spent)+' spent';
+    var drinksMoney=0, drinkCount=0;
+    state.entries.forEach(function(e){ drinksMoney+=e.drinks*e.price; drinkCount+=e.drinks; });
     document.getElementById('breakdown').innerHTML =
-      bdRow('Drinks skipped', t.drinkCount+' drinks over '+t.nights+(t.nights===1?' night':' nights'), t.drinksMoney)
-    + bdRow('Dry-day streaks', (dryBonusCount())+' × $5 (7 dry days each)', t.dryB)
-    + bdRow('Rings weeks', (ringsBonusCount())+' × $5 (5 of 7 days)', t.ringB);
+      bdRow('Drinks skipped', drinkCount+' drinks over '+state.entries.length+(state.entries.length===1?' night':' nights'), drinksMoney,false)
+    + bdRow('Dry-day streaks', dryBonusCount()+' × $5', dryBonusCount()*DRY_BONUS,false)
+    + bdRow('Rings weeks', ringsBonusCount()+' × $5', ringsBonusCount()*RINGS_BONUS,false)
+    + bdRow('Spent / banked', state.spends.length+(state.spends.length===1?' purchase':' purchases'), -spent,true);
   }
-  function bdRow(label,sub,amt){
-    return '<div class="bd-row"><div><div class="bd-label">'+label+'</div><div class="bd-sub">'+sub+'</div></div><div class="bd-amt">'+money(amt)+'</div></div>';
+  function bdRow(label,sub,amt,spent){
+    var cls=spent?' spent':'';
+    var disp=(amt<0?'−'+money(-amt):money(amt));
+    return '<div class="bd-row"><div><div class="bd-label">'+label+'</div><div class="bd-sub">'+sub+'</div></div><div class="bd-amt'+cls+'">'+disp+'</div></div>';
   }
 
-  // ================= SAVINGS =================
+  // ===== SAVINGS =====
   var drinks=1;
   var pv=document.getElementById('price'), dv=document.getElementById('drinksVal'),
       nt=document.getElementById('nightTotal'), place=document.getElementById('place'),
@@ -384,6 +394,17 @@
     h.innerHTML=html;
     h.querySelectorAll('.del').forEach(function(b){ b.onclick=function(){ var id=this.getAttribute('data-id'); state.entries=state.entries.filter(function(e){return String(e.id)!==id;}); save(); renderAll(); }; });
   }
+  function renderSpendHistory(){
+    var h=document.getElementById('spendHistory');
+    if(!state.spends.length){ h.innerHTML='<p class="empty">No purchases yet. Your saved money is all available.</p>'; return; }
+    var html='';
+    for(var i=state.spends.length-1;i>=0;i--){
+      var s=state.spends[i], label=s.what?s.what:'Spent';
+      html+='<div class="entry"><div><p class="e-main">'+label+'</p><p class="e-sub">'+s.date+'</p></div><div class="e-right"><span class="e-amt spent">−'+money(s.amount)+'</span><button class="del" data-sid="'+s.id+'">×</button></div></div>';
+    }
+    h.innerHTML=html;
+    h.querySelectorAll('.del').forEach(function(b){ b.onclick=function(){ var id=this.getAttribute('data-sid'); state.spends=state.spends.filter(function(s){return String(s.id)!==id;}); save(); renderAll(); toast('Purchase removed'); }; });
+  }
   document.getElementById('minus').onclick=function(){ if(drinks>1){drinks--;updateNight();} };
   document.getElementById('plus').onclick=function(){ if(drinks<30){drinks++;updateNight();} };
   pv.oninput=updateNight; pv.onblur=function(){ pv.value=price().toFixed(2); updateNight(); };
@@ -394,34 +415,189 @@
     save(); renderAll(); place.value=''; setDateToday(); toast('Saved '+money(drinks*p));
   };
   document.getElementById('resetBtn').onclick=function(){
-    if(!state.entries.length&&!Object.keys(state.drinkDays).length&&!Object.keys(state.ringDays).length) return;
-    if(confirm('Clear ALL data — nights, dry days, and rings? This cannot be undone.')){
-      state={entries:[],drinkDays:{},ringDays:{}}; save(); renderAll(); toast('Cleared');
+    if(!state.entries.length&&!Object.keys(state.drinkDays).length&&!Object.keys(state.ringDays).length&&!state.spends.length) return;
+    if(confirm('Clear ALL data — nights, dry days, rings, and purchases? This cannot be undone.')){
+      state={entries:[],drinkDays:{},ringDays:{},spends:[]}; save(); renderAll(); toast('Cleared');
     }
   };
 
-  // ---------- backup: copy / paste (no files) ----------
+  // ===== SPEND / BANK =====
+  function openSpend(){
+    modalMode='spend';
+    document.getElementById('spendFields').style.display='block';
+    document.getElementById('backupText').style.display='none';
+    document.getElementById('modalTitle').textContent='Spend or bank savings';
+    document.getElementById('modalHint').textContent='Draw down your available balance — because you bought something with it, or moved it to real savings. Your all-time earned total is never affected.';
+    document.getElementById('spendAvail').textContent='Available now: '+money(balance());
+    document.getElementById('spendAmount').value='';
+    document.getElementById('spendWhat').value='';
+    document.getElementById('modalAction').textContent='Confirm';
+    modal.classList.add('show');
+    setTimeout(function(){ document.getElementById('spendAmount').focus(); },100);
+  }
+  document.getElementById('spendBtn').onclick=openSpend;
+
+  // ===== DRINKS TAB =====
+  var drinkDate=document.getElementById('drinkDate'), dcVal=document.getElementById('dcVal'), dcCount=0;
+  function refreshDrinkPrompt(){
+    var d=drinkDate.value||todayISO();
+    document.getElementById('drinkPromptLabel').textContent=(d===todayISO()?'Today':prettyDate(d));
+    var v=state.drinkDays[d];
+    dcCount=(v===undefined?0:v); dcVal.textContent=dcCount;
+    var s=currentDryStreak(), line=document.getElementById('dryStreakLine');
+    if(s===0) line.textContent='No active dry streak. Record a 0-drink day to start one.';
+    else line.textContent='Current dry streak: '+s+(s===1?' day':' days')+'. '+(7-(s%7===0?7:s%7))+' to the next $5.';
+  }
+  document.getElementById('dcMinus').onclick=function(){ if(dcCount>0){dcCount--; dcVal.textContent=dcCount;} };
+  document.getElementById('dcPlus').onclick=function(){ if(dcCount<30){dcCount++; dcVal.textContent=dcCount;} };
+  document.getElementById('drinkSave').onclick=function(){
+    var d=drinkDate.value||todayISO();
+    state.drinkDays[d]=dcCount; save(); renderAll();
+    toast(dcCount===0?'Marked: dry day':'Saved: '+dcCount+(dcCount===1?' drink':' drinks'));
+  };
+  document.getElementById('drinkClear').onclick=function(){
+    var d=drinkDate.value||todayISO();
+    delete state.drinkDays[d]; save(); renderAll(); toast('Cleared');
+  };
+  drinkDate.onchange=refreshDrinkPrompt;
+
+  // ===== RINGS TAB =====
+  var ringDate=document.getElementById('ringDate');
+  function refreshRingPrompt(){
+    var d=ringDate.value||todayISO();
+    document.getElementById('ringPromptLabel').textContent=(d===todayISO()?'Today':prettyDate(d));
+    var v=state.ringDays[d];
+    document.getElementById('ringYes').className='choice'+(v===true?' sel-good':'');
+    document.getElementById('ringNo').className='choice'+(v===false?' sel-bad':'');
+    var ws=weekStart(todayISO()), closed=0;
+    for(var k=0;k<7;k++){ if(state.ringDays[addDays(ws,k)]===true) closed++; }
+    document.getElementById('ringWeekLine').textContent='This week: '+closed+' of 7 closed'+(closed>=5?' — $5 earned once the week ends.':' — need '+(5-closed)+' more for $5.');
+  }
+  function setRing(val){
+    var d=ringDate.value||todayISO();
+    if(state.ringDays[d]===val) delete state.ringDays[d]; else state.ringDays[d]=val;
+    save(); renderAll();
+    toast(state.ringDays[d]===undefined?'Cleared':(val?'Marked: rings closed':'Marked: not closed'));
+  }
+  document.getElementById('ringYes').onclick=function(){ setRing(true); };
+  document.getElementById('ringNo').onclick=function(){ setRing(false); };
+  ringDate.onchange=refreshRingPrompt;
+
+  // ===== STATS =====
+  function statCard(val,label){ return '<div class="stat"><div class="stat-val">'+val+'</div><div class="stat-label">'+label+'</div></div>'; }
+  function spanDays(map){
+    var isos=Object.keys(map); if(!isos.length) return 0;
+    isos.sort();
+    return Math.round((parseISO(isos[isos.length-1])-parseISO(isos[0]))/86400000)+1;
+  }
+  function renderDrinkStats(){
+    var el=document.getElementById('drinkStats');
+    var isos=Object.keys(state.drinkDays);
+    if(!isos.length){ el.innerHTML='<div class="stat"><div class="stat-val">—</div><div class="stat-label">Record some days to see stats</div></div>'; return; }
+    var recorded=isos.length, dryCount=0, totalDrinks=0, drinkingDays=0;
+    isos.forEach(function(k){ var c=state.drinkDays[k]; if(c===0) dryCount++; else { drinkingDays++; totalDrinks+=c; } });
+    var weeks=spanDays(state.drinkDays)/7;
+    var drinksPerWk=weeks>0?(totalDrinks/weeks):0;
+    var dryDaysPerWk=recorded>0?(dryCount/recorded*7):0;
+    var drinkingDaysPerWk=recorded>0?(drinkingDays/recorded*7):0;
+    el.innerHTML =
+      statCard(totalDrinks,'Total drinks recorded')
+    + statCard(dryCount+' / '+recorded,'Dry days (of recorded)')
+    + statCard(drinksPerWk.toFixed(1),'Avg drinks per week')
+    + statCard(dryDaysPerWk.toFixed(1),'Avg dry days per week')
+    + statCard(drinkingDaysPerWk.toFixed(1),'Avg drinking days / week')
+    + statCard(currentDryStreak(),'Current dry streak (days)');
+  }
+  function renderRingStats(){
+    var el=document.getElementById('ringStats');
+    var isos=Object.keys(state.ringDays);
+    if(!isos.length){ el.innerHTML='<div class="stat"><div class="stat-val">—</div><div class="stat-label">Record some days to see stats</div></div>'; return; }
+    var recorded=isos.length, closed=0;
+    isos.forEach(function(k){ if(state.ringDays[k]===true) closed++; });
+    var closedPerWk=recorded>0?(closed/recorded*7):0;
+    var pct=recorded>0?Math.round(closed/recorded*100):0;
+    el.innerHTML =
+      statCard(closed+' / '+recorded,'Days closed (of recorded)')
+    + statCard(pct+'%','Close rate')
+    + statCard(closedPerWk.toFixed(1),'Avg closed days / week')
+    + statCard(ringsBonusCount(),'Weeks that earned $5');
+  }
+
+  // ===== CALENDARS =====
+  var drinkCalMonth, ringCalMonth;
+  function monthLabel(iso){ return parseISO(iso).toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
+  function firstOfMonth(iso){ var d=parseISO(iso); return isoOf(d.getFullYear(),d.getMonth()+1,1); }
+  function daysInMonth(iso){ var d=parseISO(iso); return new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); }
+  function renderCal(container, titleEl, monthIso, kind){
+    titleEl.textContent=monthLabel(monthIso);
+    var dows=['M','T','W','T','F','S','S'], html='';
+    dows.forEach(function(d){ html+='<div class="cal-dow">'+d+'</div>'; });
+    var first=firstOfMonth(monthIso), lead=dowMon(first), n=daysInMonth(monthIso), ti=todayISO();
+    for(var i=0;i<lead;i++) html+='<div class="cal-cell empty"></div>';
+    for(var day=1;day<=n;day++){
+      var iso=isoOf(parseISO(monthIso).getFullYear(),parseISO(monthIso).getMonth()+1,day);
+      var cls='cal-cell', badge='';
+      if(kind==='drink'){
+        var c=state.drinkDays[iso];
+        if(c===0) cls+=' cal-good';
+        else if(c>0){ cls+=' cal-bad'; badge='<span class="cnt">'+c+'</span>'; }
+      }else{
+        var v=state.ringDays[iso];
+        if(v===true) cls+=' cal-good'; else if(v===false) cls+=' cal-bad';
+      }
+      if(iso===ti) cls+=' today';
+      if(iso>ti) cls+=' future';
+      html+='<div class="'+cls+'" data-iso="'+iso+'">'+badge+day+'</div>';
+    }
+    container.innerHTML=html;
+    container.querySelectorAll('.cal-cell[data-iso]').forEach(function(cell){
+      cell.onclick=function(){ var iso=this.getAttribute('data-iso'); if(iso>ti) return; if(kind==='drink') cycleDrink(iso); else cycleRing(iso); };
+    });
+  }
+  function cycleDrink(iso){
+    var v=state.drinkDays[iso];
+    if(v===undefined) state.drinkDays[iso]=0;
+    else if(v===0) state.drinkDays[iso]=1;
+    else delete state.drinkDays[iso];
+    save(); renderAll();
+  }
+  function cycleRing(iso){
+    var v=state.ringDays[iso];
+    if(v===undefined) state.ringDays[iso]=true;
+    else if(v===true) state.ringDays[iso]=false;
+    else delete state.ringDays[iso];
+    save(); renderAll();
+  }
+  function renderCalendars(){
+    renderCal(document.getElementById('drinkCal'),document.getElementById('drinkCalTitle'),drinkCalMonth,'drink');
+    renderCal(document.getElementById('ringCal'),document.getElementById('ringCalTitle'),ringCalMonth,'ring');
+  }
+  function shiftMonth(iso,delta){ var d=parseISO(iso); d.setMonth(d.getMonth()+delta); return isoOf(d.getFullYear(),d.getMonth()+1,1); }
+  document.getElementById('drinkPrev').onclick=function(){ drinkCalMonth=shiftMonth(drinkCalMonth,-1); renderCalendars(); };
+  document.getElementById('drinkNext').onclick=function(){ drinkCalMonth=shiftMonth(drinkCalMonth,1); renderCalendars(); };
+  document.getElementById('ringPrev').onclick=function(){ ringCalMonth=shiftMonth(ringCalMonth,-1); renderCalendars(); };
+  document.getElementById('ringNext').onclick=function(){ ringCalMonth=shiftMonth(ringCalMonth,1); renderCalendars(); };
+
+  // ===== BACKUP + SPEND MODAL =====
   var modal=document.getElementById('backupModal'),
-      modalTitle=document.getElementById('modalTitle'),
-      modalHint=document.getElementById('modalHint'),
       backupText=document.getElementById('backupText'),
       modalAction=document.getElementById('modalAction'),
       modalCancel=document.getElementById('modalCancel');
   var modalMode='copy';
 
-  function openModal(mode){
+  function openBackup(mode){
     modalMode=mode; modal.classList.add('show');
+    document.getElementById('spendFields').style.display='none';
+    backupText.style.display='block';
     if(mode==='copy'){
-      modalTitle.textContent='Copy backup';
-      modalHint.textContent='This is all your data. Tap Copy, then paste it somewhere safe — a note to yourself, or an email. Paste it back here on a new phone to restore.';
-      backupText.value=JSON.stringify({app:'drinks-saved',version:2,exported:new Date().toISOString(),data:state});
-      backupText.readOnly=true;
-      modalAction.textContent='Copy';
+      document.getElementById('modalTitle').textContent='Copy backup';
+      document.getElementById('modalHint').textContent='This is all your data. Tap Copy, then paste it somewhere safe — a note to yourself, or an email. Paste it back here on a new phone to restore.';
+      backupText.value=JSON.stringify({app:'health-tracking',version:3,exported:new Date().toISOString(),data:state});
+      backupText.readOnly=true; modalAction.textContent='Copy';
     }else{
-      modalTitle.textContent='Paste to restore';
-      modalHint.textContent='Paste your backup text here, then tap Restore. Existing data is kept; missing entries are added back.';
-      backupText.value=''; backupText.readOnly=false;
-      modalAction.textContent='Restore';
+      document.getElementById('modalTitle').textContent='Paste to restore';
+      document.getElementById('modalHint').textContent='Paste your backup text here, then tap Restore. Existing data is kept; missing entries are added back.';
+      backupText.value=''; backupText.readOnly=false; modalAction.textContent='Restore';
       setTimeout(function(){ backupText.focus(); },100);
     }
   }
@@ -434,134 +610,46 @@
     var ex={}; state.entries.forEach(function(e){ex[e.id]=true;});
     (data.entries||[]).forEach(function(e){ if(e&&typeof e.drinks==='number'&&typeof e.price==='number'&&e.date&&!ex[e.id]) state.entries.push({id:e.id||Date.now()+Math.floor(Math.random()*1000),drinks:e.drinks,price:e.price,date:e.date,place:e.place||''}); });
     state.entries.sort(function(a,b){return a.id-b.id;});
-    Object.keys(data.drinkDays||{}).forEach(function(k){ if(state.drinkDays[k]===undefined) state.drinkDays[k]=data.drinkDays[k]; });
+    Object.keys(data.drinkDays||{}).forEach(function(k){ if(state.drinkDays[k]===undefined){ var v=data.drinkDays[k]; state.drinkDays[k]=(v===false?0:(v===true?1:v)); } });
     Object.keys(data.ringDays||{}).forEach(function(k){ if(state.ringDays[k]===undefined) state.ringDays[k]=data.ringDays[k]; });
+    var sx={}; state.spends.forEach(function(s){sx[s.id]=true;});
+    (data.spends||[]).forEach(function(s){ if(s&&typeof s.amount==='number'&&!sx[s.id]) state.spends.push({id:s.id||Date.now()+Math.floor(Math.random()*1000),amount:s.amount,what:s.what||'',date:s.date||''}); });
+    state.spends.sort(function(a,b){return a.id-b.id;});
     return true;
   }
 
   modalAction.onclick=function(){
+    if(modalMode==='spend'){
+      var amt=parseFloat(document.getElementById('spendAmount').value);
+      if(isNaN(amt)||amt<=0){ toast('Enter an amount'); return; }
+      var avail=balance();
+      if(amt>avail+0.001){ toast('That\u2019s more than your '+money(avail)+' balance'); return; }
+      var what=document.getElementById('spendWhat').value.trim().replace(/[<>]/g,'');
+      state.spends.push({id:Date.now(),amount:amt,what:what,date:prettyDate(todayISO())});
+      save(); renderAll(); closeModal(); toast('Spent '+money(amt));
+      return;
+    }
     if(modalMode==='copy'){
       backupText.readOnly=false; backupText.select(); backupText.setSelectionRange(0,999999);
-      var ok=false;
-      try{ ok=document.execCommand('copy'); }catch(e){}
+      var ok=false; try{ ok=document.execCommand('copy'); }catch(e){}
       if(navigator.clipboard&&navigator.clipboard.writeText){
         navigator.clipboard.writeText(backupText.value).then(function(){ toast('Backup copied'); closeModal(); },
           function(){ if(ok){toast('Backup copied'); closeModal();} else {toast('Select all and copy manually');} });
-      }else{
-        backupText.readOnly=true;
-        if(ok){ toast('Backup copied'); closeModal(); } else { toast('Select all and copy manually'); }
-      }
+      }else{ backupText.readOnly=true; if(ok){ toast('Backup copied'); closeModal(); } else { toast('Select all and copy manually'); } }
     }else{
-      var raw=backupText.value.trim();
-      if(!raw){ toast('Paste your backup first'); return; }
+      var raw=backupText.value.trim(); if(!raw){ toast('Paste your backup first'); return; }
       try{
         var d=JSON.parse(raw);
-        var data = d.data ? d.data : (Array.isArray(d)?{entries:d,drinkDays:{},ringDays:{}}:(d.entries?{entries:d.entries,drinkDays:d.drinkDays||{},ringDays:d.ringDays||{}}:null));
+        var data=d.data?d.data:(Array.isArray(d)?{entries:d}:d);
         if(!mergeData(data)) throw new Error('bad');
         save(); renderAll(); closeModal(); toast('Backup restored');
       }catch(err){ toast('That doesn\u2019t look like valid backup text'); }
     }
   };
-  document.getElementById('exportBtn').onclick=function(){ openModal('copy'); };
-  document.getElementById('importBtn').onclick=function(){ openModal('paste'); };
+  document.getElementById('exportBtn').onclick=function(){ openBackup('copy'); };
+  document.getElementById('importBtn').onclick=function(){ openBackup('paste'); };
 
-  // ================= DRINKS TAB =================
-  var drinkDate=document.getElementById('drinkDate');
-  function refreshDrinkPrompt(){
-    var d=drinkDate.value||todayISO();
-    document.getElementById('drinkPromptLabel').textContent = (d===todayISO()?'Today':prettyDate(d));
-    var v=state.drinkDays[d];
-    document.getElementById('drinkNo').className='choice'+(v===false?' sel-good':'');
-    document.getElementById('drinkYes').className='choice'+(v===true?' sel-bad':'');
-    var s=currentDryStreak();
-    var line=document.getElementById('dryStreakLine');
-    if(s===0) line.textContent='No active dry streak. Log a dry day to start one.';
-    else line.textContent='Current dry streak: '+s+(s===1?' day':' days')+'. '+(7-(s%7===0?7:s%7))+' to the next $5.';
-  }
-  function setDrink(val){
-    var d=drinkDate.value||todayISO();
-    if(state.drinkDays[d]===val) delete state.drinkDays[d]; else state.drinkDays[d]=val;
-    save(); renderAll();
-    toast(state.drinkDays[d]===undefined?'Cleared':(val?'Marked: had a drink':'Marked: dry day'));
-  }
-  document.getElementById('drinkNo').onclick=function(){ setDrink(false); };
-  document.getElementById('drinkYes').onclick=function(){ setDrink(true); };
-  drinkDate.onchange=refreshDrinkPrompt;
-
-  // ================= RINGS TAB =================
-  var ringDate=document.getElementById('ringDate');
-  function refreshRingPrompt(){
-    var d=ringDate.value||todayISO();
-    document.getElementById('ringPromptLabel').textContent = (d===todayISO()?'Today':prettyDate(d));
-    var v=state.ringDays[d];
-    document.getElementById('ringYes').className='choice'+(v===true?' sel-good':'');
-    document.getElementById('ringNo').className='choice'+(v===false?' sel-bad':'');
-    // this week's count
-    var ws=weekStart(todayISO()), closed=0, recorded=0;
-    for(var k=0;k<7;k++){ var dd=addDays(ws,k); if(state.ringDays[dd]===true) closed++; if(state.ringDays[dd]!==undefined) recorded++; }
-    var line=document.getElementById('ringWeekLine');
-    line.textContent='This week: '+closed+' of 7 closed'+(closed>=5?' — $5 earned once the week ends.':' — need '+(5-closed)+' more for $5.');
-  }
-  function setRing(val){
-    var d=ringDate.value||todayISO();
-    if(state.ringDays[d]===val) delete state.ringDays[d]; else state.ringDays[d]=val;
-    save(); renderAll();
-    toast(state.ringDays[d]===undefined?'Cleared':(val?'Marked: rings closed':'Marked: not closed'));
-  }
-  document.getElementById('ringYes').onclick=function(){ setRing(true); };
-  document.getElementById('ringNo').onclick=function(){ setRing(false); };
-  ringDate.onchange=refreshRingPrompt;
-
-  // ================= CALENDARS =================
-  var drinkCalMonth, ringCalMonth; // iso of first day of shown month
-  function monthLabel(iso){ return parseISO(iso).toLocaleDateString('en-US',{month:'long',year:'numeric'}); }
-  function firstOfMonth(iso){ var d=parseISO(iso); return isoOf(d.getFullYear(),d.getMonth()+1,1); }
-  function daysInMonth(iso){ var d=parseISO(iso); return new Date(d.getFullYear(),d.getMonth()+1,0).getDate(); }
-  function renderCal(container, titleEl, monthIso, dayMap, onToggle){
-    titleEl.textContent=monthLabel(monthIso);
-    var dows=['M','T','W','T','F','S','S'], html='';
-    dows.forEach(function(d){ html+='<div class="cal-dow">'+d+'</div>'; });
-    var first=firstOfMonth(monthIso), lead=dowMon(first), n=daysInMonth(monthIso), ti=todayISO();
-    for(var i=0;i<lead;i++) html+='<div class="cal-cell empty"></div>';
-    for(var day=1;day<=n;day++){
-      var iso=isoOf(parseISO(monthIso).getFullYear(),parseISO(monthIso).getMonth()+1,day);
-      var v=dayMap[iso], cls='cal-cell';
-      if(v===true) cls+=(dayMap===state.drinkDays?' cal-bad':' cal-good');
-      else if(v===false) cls+=(dayMap===state.drinkDays?' cal-good':' cal-bad');
-      if(iso===ti) cls+=' today';
-      if(iso>ti) cls+=' future';
-      html+='<div class="'+cls+'" data-iso="'+iso+'">'+day+'</div>';
-    }
-    container.innerHTML=html;
-    container.querySelectorAll('.cal-cell[data-iso]').forEach(function(c){
-      c.onclick=function(){ var iso=this.getAttribute('data-iso'); if(iso>ti) return; onToggle(iso); };
-    });
-  }
-  function cycleDrink(iso){
-    var v=state.drinkDays[iso];
-    if(v===undefined) state.drinkDays[iso]=false;      // -> dry
-    else if(v===false) state.drinkDays[iso]=true;      // -> had drink
-    else delete state.drinkDays[iso];                  // -> clear
-    save(); renderAll();
-  }
-  function cycleRing(iso){
-    var v=state.ringDays[iso];
-    if(v===undefined) state.ringDays[iso]=true;        // -> closed
-    else if(v===true) state.ringDays[iso]=false;       // -> not closed
-    else delete state.ringDays[iso];                   // -> clear
-    save(); renderAll();
-  }
-  function renderCalendars(){
-    renderCal(document.getElementById('drinkCal'),document.getElementById('drinkCalTitle'),drinkCalMonth,state.drinkDays,cycleDrink);
-    renderCal(document.getElementById('ringCal'),document.getElementById('ringCalTitle'),ringCalMonth,state.ringDays,cycleRing);
-  }
-  function shiftMonth(iso,delta){ var d=parseISO(iso); d.setMonth(d.getMonth()+delta); return isoOf(d.getFullYear(),d.getMonth()+1,1); }
-  document.getElementById('drinkPrev').onclick=function(){ drinkCalMonth=shiftMonth(drinkCalMonth,-1); renderCalendars(); };
-  document.getElementById('drinkNext').onclick=function(){ drinkCalMonth=shiftMonth(drinkCalMonth,1); renderCalendars(); };
-  document.getElementById('ringPrev').onclick=function(){ ringCalMonth=shiftMonth(ringCalMonth,-1); renderCalendars(); };
-  document.getElementById('ringNext').onclick=function(){ ringCalMonth=shiftMonth(ringCalMonth,1); renderCalendars(); };
-
-  // ================= TABS =================
+  // ===== TABS =====
   document.querySelectorAll('.tab').forEach(function(t){
     t.onclick=function(){
       document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('active');});
@@ -571,12 +659,13 @@
     };
   });
 
-  // ================= RENDER ALL =================
   function renderAll(){
-    renderTotals(); renderHistory(); refreshDrinkPrompt(); refreshRingPrompt(); renderCalendars();
+    renderTotals(); renderHistory(); renderSpendHistory();
+    refreshDrinkPrompt(); refreshRingPrompt();
+    renderDrinkStats(); renderRingStats();
+    renderCalendars();
   }
 
-  // ---------- init ----------
   load();
   setDateToday();
   drinkDate.value=todayISO();
