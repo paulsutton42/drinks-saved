@@ -134,6 +134,19 @@
   .backup-btn .bk-title{font-size:14px; font-weight:600; color:var(--ink);}
   .backup-btn .bk-sub{font-size:11px; color:var(--muted);}
 
+  .modal-backdrop{display:none; position:fixed; inset:0; background:rgba(0,0,0,0.45); z-index:60; align-items:flex-end; justify-content:center;}
+  .modal-backdrop.show{display:flex;}
+  .modal{background:var(--surface); width:100%; max-width:520px; border-radius:20px 20px 0 0; padding:22px 20px calc(env(safe-area-inset-bottom) + 22px); box-shadow:0 -8px 30px rgba(0,0,0,0.2);}
+  .modal h3{font-size:17px; font-weight:600; margin:0 0 4px;}
+  .modal-hint{font-size:13px; color:var(--muted); margin:0 0 14px;}
+  #backupText{width:100%; height:150px; border:0.5px solid var(--line2); background:var(--bg); color:var(--ink); border-radius:12px; padding:12px; font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12px; resize:none; -webkit-user-select:text; user-select:text;}
+  #backupText:focus{outline:none; border-color:var(--green);}
+  .modal-actions{display:flex; gap:10px; margin-top:16px;}
+  .modal-btn{flex:1; height:48px; border-radius:12px; font-size:15px; font-weight:600; font-family:inherit; cursor:pointer; border:0.5px solid var(--line2);}
+  .modal-btn.ghost{background:var(--surface); color:var(--muted);}
+  .modal-btn.primary{background:var(--green); color:#fff; border:none;}
+  @media (prefers-color-scheme: dark){ .modal-btn.primary{background:var(--green-soft); color:var(--green-dk);} }
+
   .toast{position:fixed; left:50%; bottom:calc(env(safe-area-inset-bottom) + 24px); transform:translateX(-50%) translateY(20px); opacity:0; background:var(--ink); color:var(--bg); font-size:14px; font-weight:500; padding:12px 20px; border-radius:30px; pointer-events:none; transition:transform .25s, opacity .25s; z-index:50;}
   .toast.show{transform:translateX(-50%) translateY(0); opacity:1;}
 </style>
@@ -194,11 +207,11 @@
   <div id="history"></div>
 
   <div class="sec-head" style="margin-top:16px;"><h2>Backup</h2></div>
+  <p class="card-hint" style="margin:0 0 10px 2px;">Your data is saved automatically on this phone. Use backup only to move to a new phone or recover after clearing Safari data.</p>
   <div class="backup-row">
-    <button class="backup-btn" id="exportBtn"><span class="bk-title">Export backup</span><span class="bk-sub">Save everything to a file</span></button>
-    <button class="backup-btn" id="importBtn"><span class="bk-title">Import backup</span><span class="bk-sub">Restore from a saved file</span></button>
+    <button class="backup-btn" id="exportBtn"><span class="bk-title">Copy backup</span><span class="bk-sub">Copy your data as text</span></button>
+    <button class="backup-btn" id="importBtn"><span class="bk-title">Paste to restore</span><span class="bk-sub">Paste backup text back in</span></button>
   </div>
-  <input type="file" id="importFile" accept=".json,application/json" style="display:none">
 </div>
 
 <!-- ============ DRINKS PANEL ============ -->
@@ -253,6 +266,18 @@
     <div class="cal-legend">
       <span><i class="dot" style="background:var(--green)"></i>Closed</span>
       <span><i class="dot" style="background:var(--danger)"></i>Not closed</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="backupModal">
+  <div class="modal">
+    <h3 id="modalTitle">Backup</h3>
+    <p class="modal-hint" id="modalHint"></p>
+    <textarea id="backupText" spellcheck="false" autocomplete="off"></textarea>
+    <div class="modal-actions">
+      <button class="modal-btn ghost" id="modalCancel">Close</button>
+      <button class="modal-btn primary" id="modalAction">Copy</button>
     </div>
   </div>
 </div>
@@ -375,36 +400,70 @@
     }
   };
 
-  // ---------- export / import ----------
-  document.getElementById('exportBtn').onclick=function(){
-    var payload={app:'drinks-saved',version:2,exported:new Date().toISOString(),data:state};
-    var blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
-    var url=URL.createObjectURL(blob), a=document.createElement('a');
-    a.href=url; a.download='drinks-saved-backup-'+todayISO()+'.json';
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    setTimeout(function(){URL.revokeObjectURL(url);},1000); toast('Backup exported');
-  };
-  document.getElementById('importBtn').onclick=function(){ document.getElementById('importFile').click(); };
-  document.getElementById('importFile').onchange=function(ev){
-    var f=ev.target.files&&ev.target.files[0]; if(!f) return;
-    var r=new FileReader();
-    r.onload=function(){
+  // ---------- backup: copy / paste (no files) ----------
+  var modal=document.getElementById('backupModal'),
+      modalTitle=document.getElementById('modalTitle'),
+      modalHint=document.getElementById('modalHint'),
+      backupText=document.getElementById('backupText'),
+      modalAction=document.getElementById('modalAction'),
+      modalCancel=document.getElementById('modalCancel');
+  var modalMode='copy';
+
+  function openModal(mode){
+    modalMode=mode; modal.classList.add('show');
+    if(mode==='copy'){
+      modalTitle.textContent='Copy backup';
+      modalHint.textContent='This is all your data. Tap Copy, then paste it somewhere safe — a note to yourself, or an email. Paste it back here on a new phone to restore.';
+      backupText.value=JSON.stringify({app:'drinks-saved',version:2,exported:new Date().toISOString(),data:state});
+      backupText.readOnly=true;
+      modalAction.textContent='Copy';
+    }else{
+      modalTitle.textContent='Paste to restore';
+      modalHint.textContent='Paste your backup text here, then tap Restore. Existing data is kept; missing entries are added back.';
+      backupText.value=''; backupText.readOnly=false;
+      modalAction.textContent='Restore';
+      setTimeout(function(){ backupText.focus(); },100);
+    }
+  }
+  function closeModal(){ modal.classList.remove('show'); }
+  modalCancel.onclick=closeModal;
+  modal.onclick=function(e){ if(e.target===modal) closeModal(); };
+
+  function mergeData(data){
+    if(!data) return false;
+    var ex={}; state.entries.forEach(function(e){ex[e.id]=true;});
+    (data.entries||[]).forEach(function(e){ if(e&&typeof e.drinks==='number'&&typeof e.price==='number'&&e.date&&!ex[e.id]) state.entries.push({id:e.id||Date.now()+Math.floor(Math.random()*1000),drinks:e.drinks,price:e.price,date:e.date,place:e.place||''}); });
+    state.entries.sort(function(a,b){return a.id-b.id;});
+    Object.keys(data.drinkDays||{}).forEach(function(k){ if(state.drinkDays[k]===undefined) state.drinkDays[k]=data.drinkDays[k]; });
+    Object.keys(data.ringDays||{}).forEach(function(k){ if(state.ringDays[k]===undefined) state.ringDays[k]=data.ringDays[k]; });
+    return true;
+  }
+
+  modalAction.onclick=function(){
+    if(modalMode==='copy'){
+      backupText.readOnly=false; backupText.select(); backupText.setSelectionRange(0,999999);
+      var ok=false;
+      try{ ok=document.execCommand('copy'); }catch(e){}
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(backupText.value).then(function(){ toast('Backup copied'); closeModal(); },
+          function(){ if(ok){toast('Backup copied'); closeModal();} else {toast('Select all and copy manually');} });
+      }else{
+        backupText.readOnly=true;
+        if(ok){ toast('Backup copied'); closeModal(); } else { toast('Select all and copy manually'); }
+      }
+    }else{
+      var raw=backupText.value.trim();
+      if(!raw){ toast('Paste your backup first'); return; }
       try{
-        var d=JSON.parse(r.result);
+        var d=JSON.parse(raw);
         var data = d.data ? d.data : (Array.isArray(d)?{entries:d,drinkDays:{},ringDays:{}}:(d.entries?{entries:d.entries,drinkDays:d.drinkDays||{},ringDays:d.ringDays||{}}:null));
-        if(!data) throw new Error('bad');
-        // merge entries by id
-        var ex={}; state.entries.forEach(function(e){ex[e.id]=true;});
-        (data.entries||[]).forEach(function(e){ if(e&&typeof e.drinks==='number'&&typeof e.price==='number'&&e.date&&!ex[e.id]) state.entries.push({id:e.id||Date.now()+Math.floor(Math.random()*1000),drinks:e.drinks,price:e.price,date:e.date,place:e.place||''}); });
-        state.entries.sort(function(a,b){return a.id-b.id;});
-        // merge day maps (imported wins only if not already set)
-        Object.keys(data.drinkDays||{}).forEach(function(k){ if(state.drinkDays[k]===undefined) state.drinkDays[k]=data.drinkDays[k]; });
-        Object.keys(data.ringDays||{}).forEach(function(k){ if(state.ringDays[k]===undefined) state.ringDays[k]=data.ringDays[k]; });
-        save(); renderAll(); toast('Backup restored');
-      }catch(err){ toast('Couldn\u2019t read that file'); }
-    };
-    r.readAsText(f); ev.target.value='';
+        if(!mergeData(data)) throw new Error('bad');
+        save(); renderAll(); closeModal(); toast('Backup restored');
+      }catch(err){ toast('That doesn\u2019t look like valid backup text'); }
+    }
   };
+  document.getElementById('exportBtn').onclick=function(){ openModal('copy'); };
+  document.getElementById('importBtn').onclick=function(){ openModal('paste'); };
 
   // ================= DRINKS TAB =================
   var drinkDate=document.getElementById('drinkDate');
